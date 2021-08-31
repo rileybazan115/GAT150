@@ -1,22 +1,26 @@
-#include <iostream>
-#include <SDL.h>
+#include "Game.h"
+#include <fstream>
 
 int main(int, char**)
 {
-	if (SDL_Init(SDL_INIT_VIDEO) != 0)
-	{ 
-		std::cout << "SDL_Init Error: " << SDL_GetError() << std::endl;
-		return 1;
-	}
+	Game game;
+	game.Initialize();
 
-	SDL_Window* window = SDL_CreateWindow("GAT150", 100, 100, 800, 600, SDL_WINDOW_SHOWN);
-	if (window == nullptr)
+	bool quit = false;
+	SDL_Event event;
+
+	while (!quit && !game.IsQuit())
 	{
-		std::cout << "SDL_CreateWindowError:" << SDL_GetError() << std::endl;
-		SDL_Quit();
-		return 1;
+		SDL_PollEvent(&event);
+		switch (event.type)
+		{
+		case SDL_QUIT:
+			quit = true;
+			break;
+		}
+		game.Update();
+		game.Draw();
 	}
-	std::getchar();
 	SDL_Quit();
 	return 0;
 }
