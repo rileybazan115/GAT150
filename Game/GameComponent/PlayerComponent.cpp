@@ -1,4 +1,5 @@
 #include "PlayerComponent.h"
+#include "ProjectileComponent.h"
 #include "Engine.h"
 
 using namespace nc;
@@ -31,7 +32,7 @@ void PlayerComponent::Update()
 		force.x += speed;
 	}
 
-	if (owner->scene->engine->Get<InputSystem>()->GetKeyState(SDL_SCANCODE_W) == InputSystem::eKeyState::Held)
+	/*if (owner->scene->engine->Get<InputSystem>()->GetKeyState(SDL_SCANCODE_W) == InputSystem::eKeyState::Held)
 	{
 		force.y -= speed;
 	}
@@ -39,11 +40,23 @@ void PlayerComponent::Update()
 	if (owner->scene->engine->Get<InputSystem>()->GetKeyState(SDL_SCANCODE_S) == InputSystem::eKeyState::Held)
 	{
 		force.y += speed;
-	}
+	}*/
 
 	if (contacts.size() > 0 && owner->scene->engine->Get<InputSystem>()->GetKeyState(SDL_SCANCODE_SPACE) == InputSystem::eKeyState::Pressed)
 	{
-		force.y -= 800;
+		force.y -= 350;
+	}
+
+	if (owner->scene->engine->Get<InputSystem>()->GetButtonState(0) == InputSystem::eKeyState::Pressed) //GetButtonState(SDL_BUTTON_LEFT) == InputSystem::eKeyState::Pressed)
+	{
+		Vector2 direction = owner->scene->engine->Get<InputSystem>()->GetMousePosition() - owner->transform.position;
+
+		auto projectile = nc::ObjectFactory::Instance().Create<nc::Actor>("Projectile");
+		projectile->transform.position = owner->transform.position;
+		projectile->transform.rotation = nc::RadToDeg(direction.Angle());
+		projectile->GetComponent<ProjectileComponent>()->direction = direction.Normalized();
+
+		owner->scene->AddActor(std::move(projectile));
 	}
 
 	PhysicsComponent* physicsComponent = owner->GetComponent<PhysicsComponent>();
@@ -71,6 +84,11 @@ void PlayerComponent::OnCollisionEnter(const Event& event)
 	if (istring_compare(actor->tag, "Enemy"))
 	{
 		owner->scene->engine->Get<AudioSystem>()->PlayAudio("hurt");
+		health -= 1;
+		if (health <= 0)
+		{
+			owner->destroy = true;
+		}
 	}
 
 	std::cout << actor->tag;
@@ -95,6 +113,8 @@ bool PlayerComponent::Write(const rapidjson::Value& value) const
 bool PlayerComponent::Read(const rapidjson::Value& value)
 {
 	JSON_READ(value, speed);
+	JSON_READ(value, health);
+	JSON_READ(value, jump);
 
 	return true;
 }

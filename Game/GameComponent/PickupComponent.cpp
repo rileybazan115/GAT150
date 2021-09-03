@@ -24,8 +24,13 @@ void PickupComponent::OnCollision(const Event& event)
 	if (istring_compare(actor->tag, "Player"))
 	{
 		owner->destroy = true;
-
 		owner->scene->engine->Get<AudioSystem>()->PlayAudio("coin");
+
+		Event event;
+		event.name = "addScore";
+		event.data = 10;
+
+		owner->scene->engine->Get<EventSystem>()->Notify(event);
 	}
 	std::cout << actor->tag;
 }

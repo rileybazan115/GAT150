@@ -20,5 +20,12 @@ namespace nc
 			return (std::tolower(c1) == std::tolower(c2));
 		});
 	}
+
+	std::string uniqueString(const std::string& str)
+	{
+		static int uniqueId = 0;
+
+		return str + std::to_string(uniqueId++);
+	}
 }
 

@@ -1,0 +1,31 @@
+{
+	"actors":[
+		 {
+         "type":"Actor",
+         "name":"Title",
+         "transform":{
+            "position":[
+               400,
+               100
+            ]
+         },
+         "components":[
+            {
+               "type":"PickupComponent"
+            },
+            {
+               "type":"TextComponent",
+               "fontName":"fonts/arial.ttf",
+               "fontSize":16,
+               "color":[
+                  1,
+                  0,
+                  0
+               ],
+               "text":"GameOver"
+            }
+         ]
+      }
+	
+	]
+}

@@ -3,6 +3,13 @@
 
 using namespace nc;
 
+void EnemyComponent::Create()
+{
+	owner->scene->engine->Get<EventSystem>()->Subscribe("collision_enter", std::bind(&EnemyComponent::OnCollisionEnter, this, std::placeholders::_1), owner);
+
+	owner->scene->engine->Get<AudioSystem>()->AddAudio("hurt", "audio/hurt.wav");
+}
+
 void EnemyComponent::Update()
 {
 	Actor* player = owner->scene->FindActor("Player");
@@ -15,6 +22,18 @@ void EnemyComponent::Update()
 		assert(physicsComponent);
 
 		physicsComponent->ApplyForce(force);
+	}
+}
+
+void EnemyComponent::OnCollisionEnter(const Event& event)
+{
+	void* p = std::get<void*>(event.data);
+	Actor* actor = reinterpret_cast<Actor*>(p);
+
+	if (istring_compare(actor->tag, "Projectile"))
+	{
+		owner->destroy = true;
+		owner->scene->engine->Get<AudioSystem>()->PlayAudio("hurt");
 	}
 }
 
